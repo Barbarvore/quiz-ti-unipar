@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz Escolar Interativo</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #43cea2, #185a9d);
+      color: #fff;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    h1 {
+      background-color: rgba(0,0,0,0.3);
+      padding: 20px;
+      margin: 0;
+    }
+
+    .quiz-container {
+      margin: 40px auto;
+      width: 70%;
+      background: rgba(0,0,0,0.2);
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    .question {
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+
+    .options button {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      background-color: #f77f00;
+      color: white;
+      transition: background 0.3s;
+    }
+
+    .options button:hover {
+      background-color: #d62828;
+    }
+
+    #resultado {
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    #pontuacao, #tempo {
+      margin-top: 15px;
+      font-size: 18px;
+    }
+
+    #inicio {
+      margin: 60px auto;
+    }
+
+    #btnIniciar {
+      padding: 15px 40px;
+      font-size: 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      background-color: #f77f00;
+      color: white;
+      transition: background 0.3s;
+    }
+
+    #btnIniciar:hover {
+      background-color: #d62828;
+    }
+  </style>
+</head>
+<body>
+  <h1>Quiz Escolar UPXP</h1>
+  <div id="inicio">
+    <button id="btnIniciar" onclick="iniciarQuiz()">Iniciar Quiz</button>
+  </div>
+  <div class="quiz-container" id="quiz" style="display: none;">
+    <div class="question" id="pergunta"></div>
+    <div class="options" id="opcoes"></div>
+    <div id="resultado"></div>
+    <div id="pontuacao">Pontuação: 0</div>
+    <div id="tempo">Tempo restante: 60s</div>
+  </div>
+
+  <script>
+    const perguntas = [
+      {
+        pergunta: "O que faz um profissional de suporte técnico de TI?",
+        opcoes: ["Cuida só da decoração do escritório", "Ajuda usuários a resolver problemas com computadores e sistemas", "Vende computadores na loja", "Apenas desenha logotipos"],
+        correta: "Ajuda usuários a resolver problemas com computadores e sistemas"
+      },
+      {
+        pergunta: "Qual destas é uma boa prática de segurança digital?",
+        opcoes: ["Usar a mesma senha em todas as contas", "Clicar em todos os links recebidos", "Usar senhas fortes e diferentes para cada conta", "Compartilhar a senha com amigos"],
+        correta: "Usar senhas fortes e diferentes para cada conta"
+      },
+      {
+        pergunta: "Para que serve um banco de dados?",
+        opcoes: ["Armazenar e organizar informações", "Esfriar o computador", "Aumentar o brilho da tela", "Conectar o mouse"],
+        correta: "Armazenar e organizar informações"
+      },
+      {
+        pergunta: "O que é hardware?",
+        opcoes: ["Um programa de edição", "Um tipo de vírus", "A parte física do computador", "Uma rede social"],
+        correta: "A parte física do computador"
+      },
+      // Novas perguntas de informática
+      {
+        pergunta: "O que significa a sigla 'HTML'?",
+        opcoes: ["HyperText Markup Language", "HighText Machine Learning", "Hyper Transfer Main Link", "Home Tool Markup Language"],
+        correta: "HyperText Markup Language"
+      },
+      {
+        pergunta: "Qual empresa criou o sistema operacional Windows?",
+        opcoes: ["Apple", "Microsoft", "Google", "IBM"],
+        correta: "Microsoft"
+      },
+      {
+        pergunta: "Qual destes é um navegador de internet?",
+        opcoes: ["Photoshop", "Chrome", "Word", "Excel"],
+        correta: "Chrome"
+      },
+      {
+        pergunta: "O que é um 'byte'?",
+        opcoes: ["Um vírus de computador", "Unidade de armazenamento digital", "Um tipo de cabo", "Programa de edição"],
+        correta: "Unidade de armazenamento digital"
+      },
+      {
+        pergunta: "Qual linguagem é usada para dar estilo às páginas web?",
+        opcoes: ["HTML", "CSS", "JavaScript", "Python"],
+        correta: "CSS"
+      }
+    ];
+
+    let indice = 0;
+    let pontuacao = 0;
+    let tempo = 60;
+    let timer;
+
+    function carregarPergunta() {
+      if (indice < perguntas.length) {
+        document.getElementById("pergunta").innerText = perguntas[indice].pergunta;
+        let opcoesDiv = document.getElementById("opcoes");
+        opcoesDiv.innerHTML = "";
+        perguntas[indice].opcoes.forEach(opcao => {
+          let botao = document.createElement("button");
+          botao.innerText = opcao;
+          botao.onclick = () => verificarResposta(opcao);
+          opcoesDiv.appendChild(botao);
+        });
+      } else {
+        finalizarQuiz();
+      }
+    }
+
+    function verificarResposta(resposta) {
+      let correta = perguntas[indice].correta;
+      let resultado = document.getElementById("resultado");
+
+      if (resposta === correta) {
+        resultado.innerHTML = "🎉 Acertou!";
+        resultado.style.color = "lightgreen";
+        pontuacao++;
+      } else {
+        resultado.innerHTML = "❌ Errou!";
+        resultado.style.color = "red";
+      }
+
+      document.getElementById("pontuacao").innerText = "Pontuação: " + pontuacao;
+      indice++;
+      setTimeout(() => {
+        resultado.innerHTML = "";
+        carregarPergunta();
+      }, 1000);
+    }
+
+    function iniciarTimer() {
+      timer = setInterval(() => {
+        tempo--;
+        document.getElementById("tempo").innerText = "Tempo restante: " + tempo + "s";
+        if (tempo <= 0) {
+          clearInterval(timer);
+          finalizarQuiz();
+        }
+      }, 1000);
+    }
+
+    function finalizarQuiz() {
+      document.getElementById("pergunta").innerText = "Fim do jogo!";
+      document.getElementById("opcoes").innerHTML = "";
+      document.getElementById("resultado").innerHTML = "Sua pontuação final foi: " + pontuacao + "/" + perguntas.length;
+    }
+
+    function iniciarQuiz() {
+      document.getElementById("inicio").style.display = "none";
+      document.getElementById("quiz").style.display = "block";
+      carregarPergunta();
+      iniciarTimer();
+    }
+  </script>
+</body>
+</html>
